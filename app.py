@@ -37,23 +37,38 @@ def transform_text(text):
     return " ".join(y)
 
 
-tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
-model = pickle.load(open('model.pkl', 'rb'))
+tfidfSms = pickle.load(open('vectorizer.pkl', 'rb'))
+modelSms = pickle.load(open('model.pkl', 'rb'))
 
-st.title("College Project\n")
-st.title("Email/SMS Spam Classifier")
+tfidfEmail = pickle.load(open('vectorizeremail.pkl', 'rb'))
+modelEmail = pickle.load(open('modelemail.pkl', 'rb'))
 
-input_sms = st.text_input("Enter the SMS")
+st.title("SMS / Email Spam Classifier")
 
-if st.button('Predict'):
-    # 1. preprocess
-    transform_sms = transform_text(input_sms)
-    # 2. vectorize
-    vector_input = tfidf.transform([transform_sms])
-    # 3. predict
-    result = model.predict(vector_input)[0]
-    # 4. Display
-    if result == 1:
-        st.header("spam")
-    else:
-        st.header("Not Spam")
+option = st.selectbox(
+    'What would you like test?',
+    ('SMS', 'Email'))
+st.write('You selected:', option)
+
+
+def predict_result(tfidf, model):
+    if st.button('Predict'):
+        # 1. preprocess
+        transform_sms = transform_text(input_sms)
+        # 2. vectorize
+        vector_input = tfidf.transform([transform_sms])
+        # 3. predict
+        result = model.predict(vector_input)[0]
+        # 4. Display
+        if result == 1:
+            st.header("spam")
+        else:
+            st.header("Not Spam")
+
+
+if option == 'SMS':
+    input_sms = st.text_area("Enter the SMS")
+    predict_result(tfidfSms, modelSms)
+else:
+    input_sms = st.text_area("Enter the Email")
+    predict_result(tfidfEmail, modelEmail)
